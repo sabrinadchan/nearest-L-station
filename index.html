@@ -3,8 +3,6 @@
 <head>
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
 <script src="https://d3js.org/d3.v5.min.js"></script>
-<script src="https://d3js.org/topojson.v1.min.js"></script>
-<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css"
    integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ=="
    crossorigin=""/>
@@ -13,7 +11,6 @@
    integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
    crossorigin=""></script>
 <script src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
 <style type="text/css">
 html, body {
   margin: 0 0;
@@ -27,7 +24,6 @@ html, body {
   height: 100%;
   width: 100%;
 }
-
 </style>
 </head>
 <body>
@@ -40,15 +36,9 @@ var map = new L.Map("map", {
     zoom: 11,
 });
 
-map.addLayer(new L.StamenTileLayer("toner"), {
+map.addLayer(new L.StamenTileLayer("toner-lite"), {
     attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
 });
-
-
-// add svg overlay to map
-L.svg().addTo(map); // render all paths with SVG
-
-var svg = d3.select("#map").select("svg");
 
 var cmap = d3.scaleOrdinal(
     ["#F68481","#CF9FD3","#5CC7DD","#72D793","#E6CD58"]
@@ -59,11 +49,11 @@ function pathStyle(feature) {
   return {
     stroke: "none",
     color: cmap(feature.properties.color),
-    weight: 1
+    weight: 1,
   };
 }
 
-var pointStyle = {
+var stationStyle = {
     fillColor: "#000",
     fillOpacity: 1,
     color: "#000",
@@ -72,24 +62,29 @@ var pointStyle = {
     radius: 2
 }
 
+var lineStyle = {
+  color: "#444",
+  weight: 1
+}
+
 function pointToLayer(feature, latlng) {
-    return L.circleMarker(latlng, pointStyle);
+    return L.circleMarker(latlng, stationStyle);
 }
 
 function tooltip(feature, latlng) {
-  latlng.bindTooltip(feature.properties.STATION_DESCRIPTIVE_NAME)
+  latlng.bindTooltip(feature.properties.STATION_DESCRIPTIVE_NAME, {direction: "top"})
 }
 
 // load geospatial boundaries
 Promise.all([
   //d3.json("data/cta_voronoi2/edges/dissolved.geojson"),
   d3.json("data/voronoi.geojson"),
+  d3.json("data/lines.geojson"),
   d3.json("data/stations.geojson")
 ])
-.then(([edges, stations]) => {
-  //draw(edges, nodes);
-  //L.geoJson(edges, {style: style}).addTo(map);
+.then(([edges, lines, stations]) => {
   var geojson = L.geoJson(edges, {style: pathStyle}).addTo(map);
+  var lines = L.geoJson(lines, {style: lineStyle}).addTo(map);
   var stations = L.geoJson(stations, {pointToLayer: pointToLayer, onEachFeature: tooltip}).addTo(map);
 
   map.on('zoomend', function () {
@@ -97,15 +92,23 @@ Promise.all([
 
     if (currentZoom >= 15) {
       geojson.setStyle({weight: 3});
+      lines.setStyle({weight: 3});
       stations.setStyle({radius: 6});
-    } else if (currentZoom >= 13) {
+    } else if (currentZoom == 14) {
       geojson.setStyle({weight: 2});
+      lines.setStyle({weight: 2});
+      stations.setStyle({radius: 4});
+    } else if (currentZoom == 13) {
+      geojson.setStyle({weight: 1});
+      lines.setStyle({weight: 2});
       stations.setStyle({radius: 4});
     } else if (currentZoom >= 11) {
       geojson.setStyle({weight: 1});
+      lines.setStyle({weight: 1});
       stations.setStyle({radius: 2});
     } else {
       geojson.setStyle({weight: 1});
+      lines.setStyle({weight: 1});
       stations.setStyle({radius: 1});
     }
   });
