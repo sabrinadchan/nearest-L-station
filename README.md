@@ -1,7 +1,9 @@
 # What's My Nearest 'L' Station?
 What's My Nearest 'L' Station is an Edge Network Voronoi diagram partitioning Chicago's walkable street network into "regions" consisting of all paths with a shorter walking distance to a particular 'L' station than any other.
 
-[**Look at the map here.**](https://spencerchan.github.io/nearest-L-station/index.html). Be patient, as the map could take a couple of seconds to load and to zoom in and out.
+[**Look at the map here**](https://spencerchan.github.io/nearest-L-station/index.html). Be patient, as the map could take a couple of seconds to load and to zoom in and out.
+
+Below I provide a conceptual overview of what an Edge Network Voronoi Diagram is and how to build one. Read my [blog post](https://spencerchan.github.io/data-blog/computing-a-network-voronoi-diagram.html) to learn the step-by-step process I used to compute the diagram in What's My Nearest 'L' Station with Python. 
 
 ## Overview
 A [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram) is a partitioning of a plane with *n* points (called seeds or center nodes) into regions such that each region contains only one seed and all points closer to that seed than any other. Typically, the distance between points is measured using Euclidean distance, but other notions of distance, such as the Taxicab metric, may be used.
