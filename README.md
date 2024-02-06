@@ -1,5 +1,5 @@
 # What's My Nearest 'L' Station?
-What's My Nearest 'L' Station is an Edge Network Voronoi diagram partitioning Chicago's walkable street network into "regions" consisting of all paths with a shorter walking distance to a particular 'L' station than any other.
+What's My Nearest 'L' Station is a map for identifying the 'L' station with the shortest walking distance from any point on the Chicago street and alley grid. The map uses an Edge Network Voronoi diagram partitioning Chicago's walkable street and alley network into "regions" consisting of all paths with a shorter walking distance to a particular 'L' station than any other.
 
 [**Look at the map here**](https://sabrinadchan.github.io/nearest-L-station/index.html). Be patient, as the map could take a couple of seconds to load and to zoom in and out.
 
